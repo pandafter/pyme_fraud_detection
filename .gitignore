@@ -1,0 +1,10 @@
+# Entorno virtual
+venv/
+
+# Base de datos
+data/transactions.db
+
+# Archivos de PyCharm
+.idea/
+__pycache__/
+*.pyc
