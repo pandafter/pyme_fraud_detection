@@ -4,20 +4,30 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d21483f8-fedc-42ed-96d7-88fe15941142" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/profiles_settings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/pyme_fraud_detection.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/auth.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/database.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/__init__.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/utils/security.py" afterDir="false" />
+    <list default="true" id="d21483f8-fedc-42ed-96d7-88fe15941142" name="Changes" comment="Sprint1 - Users - Transactions">
+      <change afterPath="$PROJECT_DIR$/config/email_config.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/app.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/fraud_detection.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/monitoring.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/core/report_generator.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/ml/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/create_test_user.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/tests/test_seed_transactions.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/alert_system.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/data_processor.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/utils/styles.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/__init__.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/dashboard_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/login_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/register_view.py" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/views/transactions_view.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/database.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/database.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/core/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/core/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/utils/security.py" beforeDir="false" afterPath="$PROJECT_DIR$/utils/security.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -40,6 +50,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Python.create_test_user.executor&quot;: &quot;Run&quot;,
     &quot;Python.database.executor&quot;: &quot;Run&quot;,
     &quot;Python.main.executor&quot;: &quot;Run&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
@@ -55,7 +66,53 @@
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
-  <component name="RunManager">
+  <component name="RunManager" selected="Python.create_test_user">
+    <configuration name="create_test_user" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pyme_fraud_detection" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tests" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tests/create_test_user.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="database" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pyme_fraud_detection" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/core" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/core/database.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="database" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pyme_fraud_detection" />
       <option name="ENV_FILES" value="" />
@@ -81,6 +138,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.create_test_user" />
         <item itemvalue="Python.database" />
       </list>
     </recent_temporary>
@@ -104,7 +162,24 @@
       <workItem from="1742864753864" duration="2768000" />
       <workItem from="1743017747925" duration="7254000" />
       <workItem from="1743117284429" duration="484000" />
+      <workItem from="1743188742982" duration="5560000" />
+      <workItem from="1743384088662" duration="3292000" />
+      <workItem from="1744139217474" duration="1159000" />
+      <workItem from="1744239167810" duration="2148000" />
+      <workItem from="1744241349292" duration="4732000" />
+      <workItem from="1744247370790" duration="2081000" />
+      <workItem from="1744252410178" duration="1275000" />
+      <workItem from="1744334690749" duration="12347000" />
     </task>
+    <task id="LOCAL-00001" summary="Sprint1 - Users - Transactions">
+      <option name="closed" value="true" />
+      <created>1743188824472</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1743188824472</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -121,8 +196,13 @@
       </map>
     </option>
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="Sprint1 - Users - Transactions" />
+    <option name="LAST_COMMIT_MESSAGE" value="Sprint1 - Users - Transactions" />
+  </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/pyme_fraud_detection$main.coverage" NAME="main Coverage Results" MODIFIED="1743020782775" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
-    <SUITE FILE_PATH="coverage/pyme_fraud_detection$database.coverage" NAME="database Coverage Results" MODIFIED="1743020404459" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/core" />
+    <SUITE FILE_PATH="coverage/pyme_fraud_detection$create_test_user.coverage" NAME="create_test_user Coverage Results" MODIFIED="1744252851347" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/tests" />
+    <SUITE FILE_PATH="coverage/pyme_fraud_detection$database.coverage" NAME="database Coverage Results" MODIFIED="1744140375614" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/core" />
   </component>
 </project>

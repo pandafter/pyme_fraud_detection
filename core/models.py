@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from core.database import Base
 
@@ -22,6 +22,10 @@ class Transaction(Base):
     amount = Column(Float)
     date = Column(DateTime)
     payment_method = Column(String(50))
+    is_flagged = Column(Boolean, default=False)
 
     # Relación con usuario
     user = relationship("User", back_populates="transactions")
+
+    def __repr__(self):
+        return f"Transacción ID: {self.id}, Monto: ${self.amount}, Fecha: {self.date.strftime('%Y-%m-%d %H:%M:%S')}"

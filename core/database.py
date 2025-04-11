@@ -5,7 +5,7 @@ from pathlib import Path
 import os
 
 # Configuración de rutas
-BASE_DIR = Path(__file__).parent.parent  # Raíz del proyecto (pyme_fraud_detection)
+BASE_DIR = Path(__file__).parent.parent  # Raíz del proyecto
 DATA_DIR = os.path.join(BASE_DIR, "data")
 DATABASE_PATH = os.path.join(DATA_DIR, "transactions.db")
 

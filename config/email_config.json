@@ -1,0 +1,8 @@
+{
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "sender_email": "alertas@tudominio.com",
+    "username": "tucorreo@gmail.com",
+    "password": "tucontraseña",
+    "recipients": ["admin@empresa.com"],
+}

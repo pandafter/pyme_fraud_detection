@@ -1,4 +1,3 @@
-from typing import Optional
 from sqlalchemy.exc import SQLAlchemyError
 from core.database import Session
 from core.models import User
@@ -52,7 +51,7 @@ def login_user(email: str, password: str) -> User | None:
         user = session.query(User).filter_by(email=email).first()
 
         if user and verify_password(password, user.password_hash):
-            print(f"✅ Sesión iniciada para {user.email}")
+            print(f"✅ Sesión iniciada, Bienvenido: {user.email}")
             return user
 
         print("❌ Credenciales inválidas")
