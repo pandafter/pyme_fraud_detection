@@ -4,5 +4,5 @@
     "sender_email": "alertas@tudominio.com",
     "username": "tucorreo@gmail.com",
     "password": "tucontraseña",
-    "recipients": ["admin@empresa.com"],
+    "recipients": ["admin@empresa.com"]
 }
