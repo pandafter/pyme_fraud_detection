@@ -1,59 +1,72 @@
-import pandas as pd
-from fpdf import FPDF
+import os
 from datetime import datetime
+import csv
+from fpdf import FPDF
 from core.database import Session
 from core.models import Transaction
 
 
 class ReportGenerator:
     def __init__(self):
-        self.session = Session()
+        self.reports_dir = os.path.join(os.path.dirname(__file__), '..', 'reports')
+        if not os.path.exists(self.reports_dir):
+            os.makedirs(self.reports_dir)
 
-    def generate_csv_report(self, start_date, end_date):
-        """Genera reporte en formato CSV con detalles de fraude"""
-        transactions = self._get_transactions(start_date, end_date)
-        df = pd.DataFrame([{
-            'ID': tx.id,
-            'Usuario': tx.user_id,
-            'Monto': tx.amount,
-            'Fecha': tx.date.strftime('%Y-%m-%d %H:%M'),
-            'Método': tx.payment_method,
-            'Estado de Riesgo': '⚠️ Alto' if tx.is_flagged else '✔️ Normal',
-            'Comentario': getattr(tx, 'fraud_reason', 'N/A')  # si se almacena la razón
-        } for tx in transactions])
+    def generate_pdf_report(self, user_id, start_date, end_date):
+        # Obtener transacciones
+        transactions = self._get_transactions(user_id, start_date, end_date)
 
-        filename = f"reporte_fraude_{datetime.now().strftime('%Y%m%d_%H%M')}.csv"
-        df.to_csv(filename, index=False)
-        return filename
-
-    def generate_pdf_report(self, start_date, end_date):
-        """Genera reporte PDF con transacciones sospechosas"""
-        transactions = self._get_transactions(start_date, end_date)
+        # Crear PDF
         pdf = FPDF()
         pdf.add_page()
-        pdf.set_font("Arial", "B", 14)
-        pdf.cell(0, 10, "REPORTE DE TRANSACCIONES SOSPECHOSAS", ln=1, align='C')
-        pdf.set_font("Arial", "", 12)
-        pdf.cell(0, 10, f"Periodo: {start_date} a {end_date}", ln=1, align='C')
+        pdf.set_font("Arial", size=12)
+
+        # Título
+        pdf.cell(200, 10, txt=f"Reporte de Transacciones ({start_date} a {end_date})", ln=1, align='C')
         pdf.ln(10)
 
+        # Contenido
         for tx in transactions:
-            pdf.set_font("Arial", "B", 12)
-            pdf.cell(0, 10, f"ID: {tx.id} | Usuario: {tx.user_id} | Monto: ${tx.amount:.2f}", ln=1)
-            pdf.set_font("Arial", "", 12)
-            pdf.cell(0, 10, f"Fecha: {tx.date.strftime('%Y-%m-%d %H:%M')} | Método: {tx.payment_method}", ln=1)
-            pdf.cell(0, 10,
-                     f"Riesgo: {'Alto' if tx.is_flagged else 'Normal'} | Comentario: {getattr(tx, 'fraud_reason', 'N/A')}",
+            pdf.cell(200, 10, txt=f"ID: {tx.id} | Fecha: {tx.date} | Monto: ${tx.amount} | Método: {tx.payment_method}",
                      ln=1)
-            pdf.ln(5)
 
-        filename = f"reporte_fraude_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
-        pdf.output(filename)
-        return filename
+        # Guardar archivo
+        filename = f"reporte_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.pdf"
+        filepath = os.path.join(self.reports_dir, filename)
+        pdf.output(filepath)
 
-    def _get_transactions(self, start_date, end_date):
-        """Obtiene transacciones en el rango de fechas"""
-        return self.session.query(Transaction).filter(
-            Transaction.date.between(start_date, end_date),
-            Transaction.is_flagged == True  # Solo transacciones marcadas
-        ).all()
+        return filepath
+
+    def generate_csv_report(self, user_id, start_date, end_date):
+        # Obtener transacciones
+        transactions = self._get_transactions(user_id, start_date, end_date)
+
+        # Crear CSV
+        filename = f"reporte_{user_id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.csv"
+        filepath = os.path.join(self.reports_dir, filename)
+
+        with open(filepath, 'w', newline='') as csvfile:
+            fieldnames = ['id', 'date', 'amount', 'payment_method']
+            writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+
+            writer.writeheader()
+            for tx in transactions:
+                writer.writerow({
+                    'id': tx.id,
+                    'date': tx.date,
+                    'amount': tx.amount,
+                    'payment_method': tx.payment_method
+                })
+
+        return filepath
+
+    def _get_transactions(self, user_id, start_date, end_date):
+        db_session = Session()
+        try:
+            return db_session.query(Transaction).filter(
+                Transaction.user_id == user_id,
+                Transaction.date >= start_date,
+                Transaction.date <= end_date
+            ).order_by(Transaction.date.desc()).all()
+        finally:
+            db_session.close()

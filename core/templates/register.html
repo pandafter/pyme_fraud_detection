@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <h2>Registro de Usuario</h2>
+
+        <form id="registerForm" action="/register" method="POST">
+            <div class="form-group">
+                <label for="username">Nombre de usuario</label>
+                <input type="text" id="username" name="username" placeholder="Nombre de usuario" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" name="email" placeholder="correo@ejemplo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <div class="password-input">
+                    <input type="password" id="password" name="password" placeholder="*********" required>
+                    <button type="button" class="toggle-password">👁️</button>
+                </div>
+                <small>La contraseña debe contener mayúsculas, minúsculas, números y caracteres especiales</small>
+            </div>
+
+            <button type="submit" class="btn-primary">Registrarse</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>¿Ya tienes cuenta? <a href="/">Inicia sesión</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

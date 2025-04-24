@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header>
+    <h1>FRAUD DETECTOR</h1>
+</header>
+<div class="auth-container">
+
+    <div class="auth-card">
+        <h2>Ingreso</h2>
+
+        <form id="loginForm" action="/" method="POST">
+            <div class="form-group">
+                <label for="email">Correo electrónico</label>
+                <input type="email" id="email" name="email" placeholder="usuario@example.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Contraseña</label>
+                <div class="password-input">
+                    <input type="password" id="password" name="password" placeholder="*********" required>
+                    <button type="button" class="toggle-password">👁️</button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-primary">Iniciar Sesión</button>
+        </form>
+
+        <div class="auth-footer">
+            <p>¿No tienes cuenta? <a href="/register">Regístrate aquí</a></p>
+        </div>
+    </div>
+</div>
+{% endblock %}

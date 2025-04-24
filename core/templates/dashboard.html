@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <h2 id="dashTitle">Panel de Control</h2>
+        <p>Bienvenido, <span>{{ user.username }}</span> ({{ user.role }})</p>
+    </div>
+
+    <div class="card monitoring-card">
+        <h3>🔍 Monitoreo en Tiempo Real</h3>
+        <p id="monitorStatus">🔄 Estado: Inactivo</p>
+
+        <div class="button-group">
+            <button id="startMonitorBtn" class="btn-primary">▶️ Iniciar Monitoreo</button>
+            <button id="stopMonitorBtn" class="btn-danger" disabled>⏹️ Detener Monitoreo</button>
+        </div>
+
+        <div class="realtime-output" id="realtimeOutput">
+            <p class="no-transactions">El monitoreo está inactivo. No hay datos para mostrar.</p>
+        </div>
+    </div>
+
+    <div class="card reporting-card">
+        <h3>📊 Generar Reportes</h3>
+
+        <div class="date-range">
+            <div class="date-input">
+                <label for="startDate">📅 Desde:</label>
+                <input type="date" id="startDate" name="startDate" value="{{ default_start_date }}">
+            </div>
+
+            <div class="date-input">
+                <label for="endDate">📅 Hasta:</label>
+                <input type="date" id="endDate" name="endDate" value="{{ default_end_date }}">
+            </div>
+        </div>
+
+        <div class="radio-group">
+            <label>
+                <input type="radio" name="reportFormat" value="pdf" checked>
+                📄 PDF
+            </label>
+            <label>
+                <input type="radio" name="reportFormat" value="csv">
+                📝 CSV
+            </label>
+        </div>
+
+        <button id="generateReportBtn" class="btn-primary">⚡ Generar Reporte</button>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/transactions" class="btn-primary">💳 Ver Transacciones</a>
+        <a href="/logout" class="btn-danger">🚪 Cerrar Sesión</a>
+    </div>
+</div>
+
+<script>
+// Monitoreo en tiempo real
+const monitorStatus = document.getElementById('monitorStatus');
+const startBtn = document.getElementById('startMonitorBtn');
+const stopBtn = document.getElementById('stopMonitorBtn');
+const outputDiv = document.getElementById('realtimeOutput');
+const generateReportBtn = document.getElementById('generateReportBtn');
+
+let monitorInterval = null;
+
+// Función para mostrar mensajes de estado
+function showStatusMessage(message, isError = false) {
+    const statusMsg = document.createElement('div');
+    statusMsg.className = `status-message ${isError ? 'error' : 'info'}`;
+    statusMsg.textContent = message;
+    outputDiv.prepend(statusMsg);
+    setTimeout(() => statusMsg.remove(), 5000);
+}
+
+// Función para actualizar el estado del monitor
+function updateMonitorStatus() {
+    fetch('/api/monitoring/status')
+        .then(response => {
+            if (!response.ok) throw new Error('Error al obtener estado');
+            return response.json();
+        })
+        .then(data => {
+            if (data.active) {
+                monitorStatus.textContent = "Estado: Activo";
+                monitorStatus.style.color = "green";
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+
+                // Iniciar actualizaciones si no hay intervalo
+                if (!monitorInterval) {
+                    monitorInterval = setInterval(displayTransactions, 5000);
+                    displayTransactions();
+                }
+            } else {
+                monitorStatus.textContent = "Estado: Inactivo";
+                monitorStatus.style.color = "gray";
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+
+                // Limpiar intervalo si existe
+                if (monitorInterval) {
+                    clearInterval(monitorInterval);
+                    monitorInterval = null;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showStatusMessage('Error al verificar estado del monitor', true);
+        });
+}
+
+// Función para mostrar transacciones
+function displayTransactions() {
+    fetch('/api/monitoring/transactions')
+        .then(response => {
+            if (!response.ok) throw new Error('Error al obtener transacciones');
+            return response.json();
+        })
+        .then(data => {
+            // Filtrar solo transacciones sospechosas
+            const suspiciousTransactions = data.transactions?.filter(tx => tx.is_fraud) || [];
+
+            // Limpiar el contenedor
+            outputDiv.innerHTML = '';
+
+            if (suspiciousTransactions.length === 0) {
+                outputDiv.innerHTML = '<p class="no-transactions">No hay transacciones sospechosas recientes</p>';
+                return;
+            }
+
+            // Crear contenedor para las transacciones
+            const transactionsContainer = document.createElement('div');
+            transactionsContainer.className = 'transactions-container';
+
+            // Agregar título
+            const title = document.createElement('h4');
+            title.textContent = `⚠️ Transacciones Sospechosas (${suspiciousTransactions.length})`;
+            outputDiv.appendChild(title);
+
+            // Agregar transacciones al contenedor
+            suspiciousTransactions.forEach(tx => {
+                const txDiv = document.createElement('div');
+                txDiv.className = 'transaction fraud';
+                txDiv.innerHTML = `
+                    <p><strong>🧾 Transacción Sospechosa</strong></p>
+                    <p>📅 Fecha: ${tx.date}</p>
+                    <p>🆔 ID: ${tx.id}</p>
+                    <p>💰 Monto: $${Number(tx.amount).toLocaleString('es-ES', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</p>
+                    <p>🏷️ Método: ${tx.payment_method}</p>
+                    <hr>
+                `;
+                transactionsContainer.appendChild(txDiv);
+            });
+
+            outputDiv.appendChild(transactionsContainer);
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showStatusMessage('Error al cargar transacciones', true);
+        });
+}
+
+// Iniciar monitoreo
+startBtn.addEventListener('click', () => {
+    startBtn.disabled = true;
+    startBtn.textContent = 'Iniciando...';
+
+    fetch('/api/monitoring/start', { method: 'POST' })
+        .then(response => {
+            if (!response.ok) throw new Error('Error al iniciar');
+            return response.json();
+        })
+        .then(data => {
+            if (data.status === 'started') {
+                updateMonitorStatus();
+                showStatusMessage('Monitoreo iniciado correctamente');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showStatusMessage('Error al iniciar monitoreo', true);
+            updateMonitorStatus(); // Forzar actualización de estado
+        })
+        .finally(() => {
+            startBtn.textContent = 'Iniciar Monitoreo';
+        });
+});
+
+// Detener monitoreo
+stopBtn.addEventListener('click', () => {
+    stopBtn.disabled = true;
+    stopBtn.textContent = 'Deteniendo...';
+
+    fetch('/api/monitoring/stop', { method: 'POST' })
+        .then(response => {
+            if (!response.ok) throw new Error('Error al detener');
+            updateMonitorStatus();
+            showStatusMessage('Monitoreo detenido');
+            outputDiv.innerHTML = '<p>Monitoreo detenido. No hay transacciones en tiempo real.</p>';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showStatusMessage('Error al detener monitoreo', true);
+            updateMonitorStatus(); // Forzar actualización de estado
+        })
+        .finally(() => {
+            stopBtn.textContent = 'Detener Monitoreo';
+        });
+});
+
+// Generar reporte
+generateReportBtn.addEventListener('click', async () => {
+    const startDate = document.getElementById('startDate').value;
+    const endDate = document.getElementById('endDate').value;
+    const format = document.querySelector('input[name="reportFormat"]:checked').value;
+
+    // Validación básica
+    if (!startDate || !endDate) {
+        showStatusMessage('Debe seleccionar ambas fechas', 'error');
+        return;
+    }
+
+    const originalText = generateReportBtn.textContent;
+    generateReportBtn.disabled = true;
+    generateReportBtn.textContent = 'Generando...';
+
+    try {
+        const response = await fetch('/api/reports/generate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                startDate: startDate,
+                endDate: endDate,
+                format: format
+            })
+        });
+
+        // No intentar parsear como JSON la respuesta binaria
+        if (!response.ok) {
+            // Solo intentar parsear JSON si hay error
+            try {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Error al generar reporte');
+            } catch {
+                throw new Error(await response.text());
+            }
+        }
+
+        // Obtener el nombre del archivo del encabezado Content-Disposition
+        const contentDisposition = response.headers.get('content-disposition');
+        let filename = `reporte_${startDate}_a_${endDate}.${format}`;
+
+        if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="?([^"]+)"?/);
+            if (filenameMatch) filename = filenameMatch[1];
+        }
+
+        // Manejar diferente según el tipo de contenido
+        const contentType = response.headers.get('content-type');
+
+        if (contentType.includes('application/json')) {
+            // Esto no debería ocurrir, pero por si acaso
+            const data = await response.json();
+            throw new Error(data.error || 'Respuesta inesperada del servidor');
+        } else {
+            // Descargar el archivo binario directamente
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+
+            // Limpiar
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        showStatusMessage('Reporte generado con éxito', 'success');
+
+    } catch (error) {
+        console.error('Error al generar reporte:', error);
+        showStatusMessage(error.message, 'error');
+    } finally {
+        generateReportBtn.disabled = false;
+        generateReportBtn.textContent = originalText;
+    }
+});
+
+// Verificar estado al cargar la página
+document.addEventListener('DOMContentLoaded', () => {
+    updateMonitorStatus();
+
+    // Validar fechas iniciales
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('endDate').max = today;
+});
+</script>
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="transactions-container">
+    <div class="transactions-header">
+        <h2>Gestión de Transacciones</h2>
+        <a href="/dashboard" class="btn-secondary">Volver</a>
+    </div>
+
+    <div class="transactions-table-container">
+        <table id="transactionsTable">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Monto</th>
+                    <th>Fecha</th>
+                    <th>Método</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for tx in transactions|sort(attribute='date', reverse=True) %}
+                <tr class="{{ 'fraud' if tx.is_fraud else 'normal' }}">
+                    <td>{{ tx.id }}</td>
+                    <td class="amount-cell">${{ "{:,.2f}".format(tx.amount).replace(",", "X").replace(".", ",").replace("X", ".") }}</td>
+                    <td>{{ tx.date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ tx.payment_method }}</td>
+                    <td>{{ 'Posible Fraude' if tx.is_fraud else 'Normal' }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="transaction-form">
+        <h3>Nueva Transacción</h3>
+
+        <form id="addTransactionForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="amount">Monto:</label>
+                    <input type="text" id="amount" name="amount" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="method">Método:</label>
+                    <select id="method" name="method" required>
+                        <option value="Tarjeta Crédito">Tarjeta Crédito</option>
+                        <option value="Tarjeta Débito">Tarjeta Débito</option>
+                        <option value="Transferencia">Transferencia</option>
+                        <option value="Efectivo">Efectivo</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn-primary">Agregar Transacción</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal de Alerta de Fraude -->
+<div id="fraudAlertModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>🚨 POSIBLE FRAUDE DETECTADO 🚨</h3>
+        <div id="fraudDetails"></div>
+        <button class="btn-primary" id="confirmFraudAlert">Aceptar</button>
+    </div>
+</div>
+
+<script>
+
+let isSubmitting = false;
+
+function showStatusMessage(message, type) {
+    let statusEl = document.getElementById('status-message');
+    if (!statusEl) {
+        statusEl = document.createElement('div');
+        statusEl.id = 'status-message';
+        statusEl.style.position = 'fixed';
+        statusEl.style.top = '20px';
+        statusEl.style.right = '20px';
+        statusEl.style.padding = '10px 20px';
+        statusEl.style.borderRadius = '4px';
+        statusEl.style.zIndex = '1000';
+        document.body.appendChild(statusEl);
+    }
+
+    statusEl.textContent = message;
+    statusEl.style.display = 'block';
+
+    if (type === 'success') {
+        statusEl.style.backgroundColor = '#4CAF50';
+        statusEl.style.color = 'white';
+    } else if (type === 'error') {
+        statusEl.style.backgroundColor = '#f44336';
+        statusEl.style.color = 'white';
+    } else if (type === 'warning') {
+        statusEl.style.backgroundColor = '#ff9800';
+        statusEl.style.color = 'white';
+    }
+
+    setTimeout(() => {
+        statusEl.style.display = 'none';
+    }, 3000);
+}
+
+// Resto del código del event listener...
+document.getElementById('addTransactionForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    // Bloquear múltiples envíos
+    if (isSubmitting) return;
+    isSubmitting = true;
+
+    const form = e.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
+
+    // Deshabilitar botón y cambiar texto
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Procesando...';
+
+    try {
+
+        // Validación básica del monto
+        const amount = document.getElementById('amount').value.trim();
+
+        if (!amount || isNaN(amount)) {
+            throw new Error('Por favor ingrese un monto válido');
+        }
+
+        form.reset();
+
+        const response = await fetch('/api/transactions', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                amount: parseFloat(amount),
+                method: document.getElementById('method').value
+            })
+        });
+
+
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || 'Error en el servidor');
+        }
+
+        if (data.duplicate) {
+            showStatusMessage('Error: Esta transacción ya existe', 'error');
+        } else {
+            showStatusMessage('Transacción agregada correctamente', 'success');
+            form.reset();
+
+            // Recargar después de mostrar el mensaje
+            setTimeout(() => location.reload(), 1000);
+        }
+
+    } catch (error) {
+        console.error('Error:', error);
+        showStatusMessage(error.message, 'error');
+    } finally {
+        // Restaurar el botón (si no se recargó la página)
+        if (document.contains(submitBtn)) {
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Agregar Transacción';
+        }
+        isSubmitting = false;
+    }
+});
+
+function showFraudAlert(transaction) {
+    const modal = document.getElementById('fraudAlertModal');
+    const fraudDetails = document.getElementById('fraudDetails');
+    const formattedAmount = new Intl.NumberFormat('es-ES', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    }).format(transaction.amount);
+
+    const date = new Date(transaction.date);
+    const formattedDate = date.toLocaleString('es-ES');
+
+    fraudDetails.innerHTML = `
+        <p>Transacción ID: ${transaction.id}</p>
+        <p>Monto: $${formattedAmount}</p>
+        <p>Fecha: ${formattedDate}</p>
+    `;
+
+    modal.style.display = 'block';
+
+    // Cerrar modal al hacer clic en el botón o en la X
+    document.getElementById('confirmFraudAlert').onclick =
+    document.querySelector('.close').onclick = function() {
+        modal.style.display = 'none';
+    };
+
+    // Cerrar al hacer clic fuera del modal
+    window.onclick = function(event) {
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    };
+}
+</script>
+
+<style>
+
+    .btn-primary {
+        font-size: .8rem;
+        height: 3dvh;
+        margin-top: 3%;
+        font-weight: bold;
+    }
+
+    /* Estilos mejorados para la tabla */
+#transactionsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+#transactionsTable th {
+    background-color: #f2f2f2;
+    padding: 12px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+}
+
+#transactionsTable td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+#transactionsTable tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* Resaltar transacciones nuevas */
+tr.normal:first-child {
+    background-color: #e8f5e9;
+}
+
+/* Estilos para transacciones */
+tr.fraud {
+    background-color: #fff3f3;
+    border-left: 4px solid #ff6b6b;
+}
+
+tr.normal {
+    background-color: #f8f9fa;
+}
+
+/* Estilos para el modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover {
+    color: black;
+}
+</style>
+{% endblock %}
