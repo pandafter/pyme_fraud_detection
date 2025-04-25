@@ -27,6 +27,7 @@ header {
 header h1 {
     font-weight: bold;
     font-size: 5rem;
+    margin-top: -5%;
 }
 
 /* Contenedores */
@@ -255,7 +256,10 @@ footer {
 }
 
 .imgRobot {
-    position: absolute;
-    top: 59vh;
+    position: fixed;
+    top: 70%;
+    width: 20vw;
+    height: 40vh;
     filter: blur(3px);
+    z-index: -10;
 }
