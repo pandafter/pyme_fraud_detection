@@ -1,24 +1,32 @@
-/* Estilos base con personalidad única */
+/* Tipografía responsiva y estructura base */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    font-size: clamp(0.95rem, 1vw, 1.1rem);
+    background-color: #eef1f5;
+}
 
 #dashTitle {
     color: white;
 }
 
-
+/* Contenedor principal */
 .dashboard-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 20px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 100%;
+    width: 95%;
+    margin: auto;
+    padding: clamp(1rem, 2vw, 2rem);
     background-color: #f5f7fa;
     border-radius: 15px;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
 }
 
+/* Encabezado del dashboard */
 .dashboard-header {
     text-align: center;
-    margin-bottom: 30px;
-    padding: 20px;
+    margin-bottom: 2rem;
+    padding: clamp(1rem, 2vw, 2rem);
     background: linear-gradient(135deg, #6e48aa 0%, #9d50bb 100%);
     color: white;
     border-radius: 12px;
@@ -27,22 +35,22 @@
 
 .dashboard-header h2 {
     margin: 0;
-    font-size: 2.2rem;
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
     font-weight: 600;
     letter-spacing: 1px;
 }
 
 .dashboard-header p {
     margin: 10px 0 0;
-    font-size: 1.1rem;
+    font-size: clamp(1rem, 2vw, 1.2rem);
     opacity: 0.9;
 }
 
-/* Tarjetas con diseño distintivo */
+/* Tarjetas */
 .card {
     background: white;
     border-radius: 12px;
-    padding: 25px;
+    padding: clamp(1rem, 2vw, 1.5rem);
     margin-bottom: 25px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     border: 1px solid #e1e5eb;
@@ -55,33 +63,33 @@
 }
 
 .card h3 {
-    margin-top: 0;
+    font-size: clamp(1.3rem, 3vw, 1.6rem);
     color: #4a4a4a;
-    font-size: 1.5rem;
+    margin-bottom: 1rem;
     border-bottom: 2px solid #e1e5eb;
     padding-bottom: 10px;
-    margin-bottom: 20px;
 }
 
-/* Grupos de botones */
-.button-group {
+/* Botones */
+.button-group, .action-buttons {
     display: flex;
     gap: 15px;
-    margin: 20px 0;
     flex-wrap: wrap;
+    justify-content: center;
+    margin: 20px 0;
 }
 
-/* Botones con estilo único */
 .btn-primary, .btn-danger {
     padding: 12px 24px;
-    border: none;
     border-radius: 8px;
     font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
     font-size: 1rem;
-    letter-spacing: 0.5px;
     text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    min-width: 140px;
 }
 
 .btn-primary {
@@ -108,9 +116,9 @@
     box-shadow: 0 6px 12px rgba(255, 65, 108, 0.4);
 }
 
-/* Estado del monitor */
+/* Monitor */
 #monitorStatus {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     padding: 8px 15px;
     border-radius: 20px;
@@ -119,7 +127,7 @@
     color: #666;
 }
 
-/* Output en tiempo real */
+/* Salida en tiempo real */
 .realtime-output {
     background-color: #f8f9fa;
     border-radius: 10px;
@@ -130,6 +138,7 @@
     border: 1px dashed #d1d5db;
 }
 
+/* Transacciones */
 .transaction {
     padding: 15px;
     margin-bottom: 15px;
@@ -145,8 +154,8 @@
 }
 
 .transaction p {
-    margin: 8px 0;
     font-size: 0.95rem;
+    margin: 8px 0;
 }
 
 .transaction strong {
@@ -160,17 +169,17 @@
     padding: 20px;
 }
 
-/* Formulario de reportes */
+/* Formulario de fechas */
 .date-range {
     display: flex;
     gap: 20px;
-    margin-bottom: 20px;
     flex-wrap: wrap;
+    margin-bottom: 20px;
 }
 
 .date-input {
     flex: 1;
-    min-width: 200px;
+    min-width: 180px;
 }
 
 .date-input label {
@@ -183,14 +192,16 @@
 .date-input input {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ddd;
     border-radius: 6px;
     font-size: 1rem;
+    border: 1px solid #ddd;
 }
 
+/* Radios */
 .radio-group {
     display: flex;
     gap: 20px;
+    flex-wrap: wrap;
     margin-bottom: 20px;
 }
 
@@ -206,8 +217,8 @@
     padding: 12px 20px;
     margin: 15px 0;
     border-radius: 8px;
-    font-weight: 500;
     text-align: center;
+    font-weight: 500;
     animation: fadeIn 0.3s ease;
 }
 
@@ -229,46 +240,13 @@
     border: 1px solid #90caf9;
 }
 
-/* Botones de acción */
-.action-buttons {
-    display: flex;
-    gap: 15px;
-    margin-top: 30px;
-    justify-content: center;
-    flex-wrap: wrap;
-}
-
-/* Efectos y animaciones */
+/* Animaciones */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-    .dashboard-container {
-        padding: 15px;
-    }
-
-    .card {
-        padding: 20px;
-    }
-
-    .date-range {
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .button-group, .action-buttons {
-        flex-direction: column;
-    }
-
-    .btn-primary, .btn-danger {
-        width: 100%;
-    }
-}
-
-/* Estilo para scrollbar */
+/* Scroll personalizado */
 .realtime-output::-webkit-scrollbar {
     width: 8px;
 }
@@ -287,6 +265,33 @@
     background: #a8a8a8;
 }
 
+/* Responsivo: Breakpoints */
+@media (max-width: 992px) {
+    .btn-primary, .btn-danger {
+        flex: 1;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .transaction {
+        font-size: 0.9rem;
+    }
+
+    .button-group, .action-buttons {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .btn-primary, .btn-danger {
+        width: 100%;
+    }
+}
+
+/* Fuente destacada */
 span {
     font-weight: bold;
 }
