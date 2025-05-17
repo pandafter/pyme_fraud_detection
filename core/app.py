@@ -403,4 +403,3 @@ if __name__ == "__main__":
         os.makedirs('temp')
     if not os.path.exists('reports'):
         os.makedirs('reports')
-    app.run(debug=True)
